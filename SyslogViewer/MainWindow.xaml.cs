@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Windows;
+using System.Text.RegularExpressions;
 
 namespace SyslogViewer;
 
@@ -62,15 +63,48 @@ public partial class MainWindow : Window
                 string chunk = Encoding.UTF8.GetString(buffer, 0, read);
                 string message = chunk.TrimEnd('\n', '\r');
 
-                Dispatcher.Invoke(() =>
+                string pattern = @"^<(\d+)>(\d)\s(\S+)\s(\S+)\s(\S+)\s(\S+)\s(\S+)\s(\S+)\s?(.*)$";
+                Match match = Regex.Match(message, pattern);
+
+                string? NilToNull(string value) => value == "-" ? null : value;
+
+                int? ParseNullableInt(string value)
+                    => value == "-" ? null : int.Parse(value);
+
+                DateTime? ParseNullableDate(string value)
+                    => value == "-" ? null : DateTimeOffset.Parse(value).LocalDateTime;
+
+                if (match.Success)
                 {
-                    Logs.Add(new SyslogEntry
+                    Dispatcher.Invoke(() =>
                     {
-                        Time = DateTime.Now,
-                        Host = id,
-                        Message = message
+                        Logs.Add(new SyslogEntry
+                        {
+                            Host = id,
+                            Time = ParseNullableDate(match.Groups[3].Value),
+                            Facility = int.Parse(match.Groups[1].Value) / 8,
+                            Severity = int.Parse(match.Groups[1].Value) % 8,
+                            Hostname = NilToNull(match.Groups[4].Value),
+                            AppName = NilToNull(match.Groups[5].Value),
+                            ProcessId = ParseNullableInt(match.Groups[6].Value),
+                            MessageId = ParseNullableInt(match.Groups[7].Value),
+                            StructuredData = NilToNull(match.Groups[8].Value),
+                            Message = NilToNull(match.Groups[9].Value),
+                        });
                     });
-                });
+                }
+                else
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        Logs.Add(new SyslogEntry
+                        {
+                            Host = id,
+                            Time = DateTime.Now,
+                            Message = message,
+                        });
+                    });
+                }
             }
         }
         catch { }

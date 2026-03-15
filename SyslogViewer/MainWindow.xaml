@@ -20,11 +20,39 @@
 
 			<DataGrid.Columns>
 				<DataGridTextColumn Header="Time"
-                                    Binding="{Binding Time}"
+                                    Binding="{Binding Time, StringFormat=G}"
                                     Width="150"/>
 
 				<DataGridTextColumn Header="Host"
                                     Binding="{Binding Host}"
+                                    Width="150"/>
+
+				<DataGridTextColumn Header="Hostname"
+                                    Binding="{Binding Hostname}"
+                                    Width="150"/>
+
+				<DataGridTextColumn Header="App"
+                                    Binding="{Binding AppName}"
+                                    Width="120"/>
+
+				<DataGridTextColumn Header="Facility"
+                                    Binding="{Binding Facility}"
+                                    Width="90"/>
+
+				<DataGridTextColumn Header="Severity"
+                                    Binding="{Binding Severity}"
+                                    Width="90"/>
+
+				<DataGridTextColumn Header="ProcessId"
+                                    Binding="{Binding ProcessId}"
+                                    Width="100"/>
+
+				<DataGridTextColumn Header="MsgId"
+                                    Binding="{Binding MessageId}"
+                                    Width="100"/>
+
+				<DataGridTextColumn Header="SD"
+                                    Binding="{Binding StructuredData}"
                                     Width="200"/>
 
 				<DataGridTextColumn Header="Message"
