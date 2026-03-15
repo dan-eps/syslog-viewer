@@ -51,14 +51,16 @@ public partial class MainWindow : Window
         try
         {
             var stream = client.GetStream();
-            var reader = new StreamReader(stream, Encoding.UTF8);
+            var buffer = new byte[4096];
 
             while (true)
             {
-                string line = await reader.ReadLineAsync();
-
-                if (line == null)
+                int read = await stream.ReadAsync(buffer, 0, buffer.Length);
+                if(read == 0)
                     break;
+
+                string chunk = Encoding.UTF8.GetString(buffer, 0, read);
+                string message = chunk.TrimEnd('\n', '\r');
 
                 Dispatcher.Invoke(() =>
                 {
@@ -66,7 +68,7 @@ public partial class MainWindow : Window
                     {
                         Time = DateTime.Now,
                         Host = id,
-                        Message = line
+                        Message = message
                     });
                 });
             }
