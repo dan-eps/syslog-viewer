@@ -11,6 +11,46 @@ using System.Text.RegularExpressions;
 
 namespace SyslogViewer;
 
+public enum SyslogSeverity
+{
+    Emergency = 0,
+    Alert = 1,
+    Critical = 2,
+    Error = 3,
+    Warning = 4,
+    Notice = 5,
+    Info = 6,
+    Debug = 7
+}
+
+public enum SyslogFacility
+{
+    Kernel = 0,
+    User = 1,
+    Mail = 2,
+    Daemon = 3,
+    Auth = 4,
+    Syslog = 5,
+    Lpr = 6,
+    News = 7,
+    UUCP = 8,
+    Cron = 9,
+    AuthPriv = 10,
+    FTP = 11,
+    NTP = 12,
+    LogAudit = 13,
+    LogAlert = 14,
+    ClockDaemon = 15,
+    Local0 = 16,
+    Local1 = 17,
+    Local2 = 18,
+    Local3 = 19,
+    Local4 = 20,
+    Local5 = 21,
+    Local6 = 22,
+    Local7 = 23
+}
+
 public partial class MainWindow : Window
 {
     ObservableCollection<SyslogEntry> Logs = new();
@@ -82,8 +122,8 @@ public partial class MainWindow : Window
                         {
                             Host = id,
                             Time = ParseNullableDate(match.Groups[3].Value),
-                            Facility = int.Parse(match.Groups[1].Value) / 8,
-                            Severity = int.Parse(match.Groups[1].Value) % 8,
+                            Facility = Enum.GetName(typeof(SyslogFacility), int.Parse(match.Groups[1].Value) / 8),
+                            Severity = Enum.GetName(typeof(SyslogSeverity), int.Parse(match.Groups[1].Value) % 8),
                             Hostname = NilToNull(match.Groups[4].Value),
                             AppName = NilToNull(match.Groups[5].Value),
                             ProcessId = ParseNullableInt(match.Groups[6].Value),

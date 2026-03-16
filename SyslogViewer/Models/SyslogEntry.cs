@@ -5,8 +5,8 @@ namespace SyslogViewer.Models;
 public class SyslogEntry
 {
 	public string Host { get; set; }
-	public int? Facility { get; set; }
-	public int? Severity { get; set; }
+	public string? Facility { get; set; }
+	public string? Severity { get; set; }
 	public DateTime? Time { get; set; }
 	public string? Hostname { get; set; }
 	public string? AppName { get; set; }
